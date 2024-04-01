@@ -1,3 +1,10 @@
+## Dev
+
+1. Clonar el repositorio
+2. Crear archivo `.env` basado en el `.env.template`
+3. Ejecutar el comando `git submodule update --init --recursive` para reconstruir los submodulos
+4. Ejecutar `yarn start:dev` o `npm run start:dev`
+
 ### Pasos para crear los Git Submodules
 
 1. Crear un nuevo repositorio en GitHub
