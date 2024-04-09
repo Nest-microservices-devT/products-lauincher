@@ -1,0 +1,88 @@
+version: "3.8"
+
+services:
+  nats-server:
+    image: nats:latest
+    #  ports:
+    #   - ${NATS_SERVER_PORT}:${NATS_SERVER_PORT}
+
+  client-gateway:
+    build:
+      context: ./client-gateway
+      dockerfile: ./dockerfile.prod
+    image: client-gateway
+    ports:
+      - ${CLIENT_GATEWAY_PORT}:${CLIENT_GATEWAY_PORT}
+    environment:
+      - PORT=${CLIENT_GATEWAY_PORT}
+      - NATS_SERVERS=${NATS_SERVERS_HOST}
+
+  auth-ms:
+    build:
+      context: ./auth-ms
+      dockerfile: ./dockerfile.prod
+    image: auth-ms
+    ports:
+      - ${AUTH_PORT}:${AUTH_PORT}
+    environment:
+      - PORT=${AUTH_PORT}
+      - NATS_SERVERS=${NATS_SERVERS_HOST}
+      - DATABASE_URL=${AUTH_DATABASE_URL}
+      - JWT_SECRET=${AUTH_JWT_SECRET}
+
+  products-ms:
+    build:
+      context: ./products-ms
+      dockerfile: ./dockerfile.prod
+    image: products-ms
+    ports:
+      - ${PRODUCTS_MS_PORT}:${PRODUCTS_MS_PORT}
+    environment:
+      - PORT=${PRODUCTS_MS_PORT}
+      - DATABASE_URL=${PRODUCTS_DATABASE_URL}
+      - NATS_SERVERS=${NATS_SERVERS_HOST}
+
+  orders-ms:
+    depends_on:
+      - orders-db
+    build:
+      context: ./orders-ms
+      dockerfile: ./dockerfile.prod
+      args:
+        - ORDERS_DATABASE_URL_PROD=${ORDERS_DATABASE_URL_PROD}
+    image: orders-ms
+    ports:
+      - ${ORDERS_MS_PORT}:${ORDERS_MS_PORT}
+    environment:
+      - PORT=${ORDERS_MS_PORT}
+      - DATABASE_URL=${ORDERS_DATABASE_URL_PROD}
+      - NATS_SERVERS=${NATS_SERVERS_HOST}
+
+  orders-db:
+    container_name: orders_database
+    image: postgres:16.2
+    restart: always
+    ports:
+      - ${ORDERS_DB_PORT}:${ORDERS_DB_PORT}
+    volumes:
+      - ./orders-ms/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${ORDERS_POSTGRES_USER_PROD}
+      - POSTGRES_PASSWORD=${ORDERS_POSTGRES_PASSWORD_PROD}
+      - POSTGRES_DB=${ORDERS_POSTGRES_DB}
+
+  payments-ms:
+    build:
+      context: ./payments-ms
+      dockerfile: ./dockerfile.prod
+    image: payments-ms
+    ports:
+      - ${PAYMENTS_MS_PORT}:${PAYMENTS_MS_PORT}
+    environment:
+      - PORT=${PAYMENTS_MS_PORT}
+      - NATS_SERVERS=${NATS_SERVERS_HOST}
+      - STRIPE_SUCCESS_URL=${PAYMENTS_MS_STRIPE_SUCCESS_URL}
+      - STRIPE_CANCEL_URL=${PAYMENTS_MS_STRIPE_CANCEL_URL}
+      - STRIPE_SECRET=${PAYMENTS_MS_STRIPE_SECRET}
+      - STRIPE_ENDPOINT_SECRET=${PAYMENTS_MS_STRIPE_ENDPOINT_SECRET}
+      - STRIPE_ENDPOINT_SECRET_TESTING=${PAYMENTS_MS_STRIPE_ENDPOINT_SECRET_TESTING}
