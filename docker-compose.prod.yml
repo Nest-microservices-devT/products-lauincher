@@ -10,7 +10,7 @@ services:
     build:
       context: ./client-gateway
       dockerfile: ./dockerfile.prod
-    image: client-gateway
+    image: us-east1-docker.pkg.dev/microservice-nestjs-419903/image-registry/client-gateway
     ports:
       - ${CLIENT_GATEWAY_PORT}:${CLIENT_GATEWAY_PORT}
     environment:
@@ -21,7 +21,7 @@ services:
     build:
       context: ./auth-ms
       dockerfile: ./dockerfile.prod
-    image: auth-ms
+    image: us-east1-docker.pkg.dev/microservice-nestjs-419903/image-registry/auth-ms
     ports:
       - ${AUTH_PORT}:${AUTH_PORT}
     environment:
@@ -34,7 +34,7 @@ services:
     build:
       context: ./products-ms
       dockerfile: ./dockerfile.prod
-    image: products-ms
+    image: us-east1-docker.pkg.dev/microservice-nestjs-419903/image-registry/products-ms
     ports:
       - ${PRODUCTS_MS_PORT}:${PRODUCTS_MS_PORT}
     environment:
@@ -50,7 +50,7 @@ services:
       dockerfile: ./dockerfile.prod
       args:
         - ORDERS_DATABASE_URL_PROD=${ORDERS_DATABASE_URL_PROD}
-    image: orders-ms
+    image: us-east1-docker.pkg.dev/microservice-nestjs-419903/image-registry/orders-ms
     ports:
       - ${ORDERS_MS_PORT}:${ORDERS_MS_PORT}
     environment:
@@ -75,7 +75,7 @@ services:
     build:
       context: ./payments-ms
       dockerfile: ./dockerfile.prod
-    image: payments-ms
+    image: us-east1-docker.pkg.dev/microservice-nestjs-419903/image-registry/payments-ms
     ports:
       - ${PAYMENTS_MS_PORT}:${PAYMENTS_MS_PORT}
     environment:
