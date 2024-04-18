@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: payments-ms
+  name: payments-ms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payments-ms
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: payments-ms
+    spec:
+      containers:
+      - image: us-east1-docker.pkg.dev/microservice-nestjs-419903/image-registry/payments-ms
+        name: payments-ms
+        env:
+        - name: PORT
+          value: "3003"
+        - name: NATS_SERVERS
+          value: "nats://nats"
+        - name: STRIPE_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: payments-secrets
+              key: stripe_secret
+        - name: STRIPE_SUCCESS_URL
+          valueFrom:
+            secretKeyRef:
+              name: payments-secrets
+              key: stripe_success_url
+        - name: STRIPE_CANCEL_URL
+          valueFrom:
+            secretKeyRef:
+              name: payments-secrets
+              key: stripe_cancel_url
+        - name: STRIPE_ENDPOINT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: payments-secrets
+              key: stripe_endpoint_secret
+        - name: STRIPE_ENDPOINT_SECRET_TESTING
+          valueFrom:
+            secretKeyRef:
+              name: payments-secrets
+              key: stripe_endpoint_secret_testing
+        resources: {}
+status: {}
